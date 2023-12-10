@@ -19,19 +19,21 @@ const client = new MongoClient(uri, {
 });
 async function run() {
   try {
+    const serviceCollection=client.db("weforthem-data").collection("supports-data");
+    const supportCollection=client.db("weforthem-data").collection("users");
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    app.get("/supports",async(req,res)=>{
+        const query={};
+        const cursor=serviceCollection.find(query);
+        const supports=await cursor.toArray();
+        res.send(supports);
+    })
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    
   }
 }
-run().catch(console.dir);
+run().catch((err)=>console.error(err));
 
 app.get("/", (req, res) => {
   res.send("Welcome WeforThem Server");
